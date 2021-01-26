@@ -1,0 +1,393 @@
+#include <locale.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#define TOTCLIENTES 5
+#define TOTPEDIDOS 10
+
+struct CLIENTE {
+	char nome[100], rua[100], CPF[15], telefone[15];
+	int verifcliente;
+};
+
+struct PEDIDO {
+	int codigo, escolha; // escolha aqui representa o NÚMERO do serviço ofertado
+	float valorpedido;
+	char CPF[15], escolhachar[25]; // escolha aqui representa o NOME do serviço ofertado
+};
+
+int qtdcliente=0, qtdpedido=0;
+ 
+/* Protótipos */
+	void cadastro_clt (struct CLIENTE clientes[TOTCLIENTES]);
+	void cadastro_pdo (struct PEDIDO pedidos[TOTPEDIDOS], struct CLIENTE clientes[TOTCLIENTES]);
+	void mostrar_clt (struct CLIENTE clientes[TOTCLIENTES]);
+	void mostrar_pdo (struct PEDIDO pedidos[TOTPEDIDOS], struct CLIENTE clientes[TOTCLIENTES]);
+	void listar_pdo (struct PEDIDO *pedidos, struct CLIENTE *clientes);
+	void listar_clt (struct PEDIDO *pedidos, struct CLIENTE *clientes);
+	void deletar_clt (struct CLIENTE *clientes);
+	void listar_pdoclt (struct PEDIDO *pedidos, struct CLIENTE *clientes);
+	void totalvendas (struct PEDIDO *pedidos);
+	int procura_cpf (char *CPF, struct CLIENTE *clientes);
+/**/
+
+int main (){
+	setlocale (LC_ALL, "Portuguese");
+	int op;
+	struct CLIENTE clientes[TOTCLIENTES];	
+	struct PEDIDO pedidos[TOTPEDIDOS];
+	
+	do {
+		system("cls");
+		puts("          :...............................:");
+		puts("          :..:          INEA           :..:");
+		puts("          :...............................:");
+		puts("          :.. (1) CADASTRAR CLIENTE     ..:");
+		puts("          :.. (2) CADASTRAR PEDIDO      ..:");
+		puts("          :.. (3) MOSTRAR CLIENTE       ..:");
+		puts("          :.. (4) MOSTRAR PEDIDO        ..:");
+		puts("          :.. (5) LISTAR PEDIDOS        ..:");
+		puts("          :.. (6) LISTAR CLIENTES       ..:");
+		puts("          :.. (7) DELETAR CLIENTE       ..:");
+		puts("          :.. (8) PEDIDOS DO CLIENTE    ..:");
+		puts("          :.. (9) TOTAL DE VENDAS       ..:");
+		puts("          :.. (10) F E C H A R          ..:");
+		puts("          :.......................... ....:");
+		scanf("%i", &op);
+		
+		switch (op){
+			case 1:
+				cadastro_clt(clientes);
+			break;
+			
+			case 2:
+				cadastro_pdo(pedidos, clientes);
+			break;
+			
+			case 3:
+				mostrar_clt(clientes);
+			break;
+			
+			case 4:
+				mostrar_pdo(pedidos, clientes);
+			break;
+							
+			case 5:
+				listar_pdo(pedidos, clientes);
+			break;
+			
+			case 6:
+				listar_clt(pedidos, clientes);
+			break;
+			
+			case 7:
+				deletar_clt(clientes);
+			break;
+			
+			case 8:
+				listar_pdoclt(pedidos, clientes);
+			break;
+			
+			case 9:
+				totalvendas(pedidos);
+			break;
+		}
+	}while (op!=10);
+	if (op==10){
+		puts("S I S T E M A  F I N A L I Z A D O...");
+	}
+	
+	return 0;
+}
+
+/* Funções principais */
+	void cadastro_clt (struct CLIENTE *cliente){
+		system("cls");
+		if (qtdcliente==TOTCLIENTES){
+			puts(": Lista cheia! Exclua um cliente. :\n");
+			system("pause");
+		}else{
+			puts(":..: NOVO CLIENTE :..:");
+			printf(":.. Nome: ");
+			fflush(stdin);
+			fgets(cliente[qtdcliente].nome, 100, stdin);
+			puts(":.....:");
+			printf(":.. Endereço: ");
+			fgets(cliente[qtdcliente].rua, 100, stdin);
+			puts(":.....:");
+			printf(":.. CPF (sem pontos): ");
+			fgets(cliente[qtdcliente].CPF, 15, stdin);
+			puts(":.....:");
+			printf(":.. Telefone: ");
+			fflush(stdin);
+			fgets(cliente[qtdcliente].telefone, 15, stdin);
+			cliente[qtdcliente].verifcliente = 1;
+			qtdcliente++;
+			system("cls");
+			puts(":.....:");
+			puts (":.. NOVO CLIENTE CADASTRADO COM SUCESSO!  ..:");
+			puts(":.....:");
+			system("pause");	
+		}
+	}
+	
+	void cadastro_pdo (struct PEDIDO *pedidos, struct CLIENTE *clientes){
+		char op;
+		int retorno;
+		do{
+			if (qtdpedido==TOTPEDIDOS){
+				puts(": Lista de pedidos cheia! :");
+			}else{
+				system("cls");
+				puts("        :..: NOVO PEDIDO :..:    ");
+				puts(":.................................:");
+				puts(":..            OPÇÕES           ..:");
+				puts(":.. 01 - Avaliação médica       ..:");
+				puts(":.. 02 - Abdominoplastia        ..:");
+				puts(":.. 03 - Toxina botulínica      ..:");
+				puts(":.. 04 - Mamoplastia            ..:");
+				puts(":.. 05 - Rinoplastia            ..:");
+				puts(":.. 04 - Lipoaspiração          ..:");
+				puts(":.................................:");
+				scanf("%i", &pedidos[qtdpedido].escolha);
+				
+				if ((pedidos[qtdpedido].escolha == 01) || (pedidos[qtdpedido].escolha == 1)){
+					strcpy (pedidos[qtdpedido].escolhachar, "AVALIAÇÃO MÉDICA");
+					system("cls");
+					puts(":.....:");
+					printf(":  Adicionar 'Avaliação médica' ao cadastro do cliente... :\n");
+					puts(":.....:");
+				}
+				if ((pedidos[qtdpedido].escolha == 02) || (pedidos[qtdpedido].escolha == 2)){
+					strcpy (pedidos[qtdpedido].escolhachar, "ABDOMINOPLASTIA");
+					system("cls");
+					puts(":.....:");
+					printf(":  Adicionar 'Abdominoplastia' ao cadastro do cliente... :\n");
+					puts(":.....:");
+				}
+				if ((pedidos[qtdpedido].escolha == 03) || (pedidos[qtdpedido].escolha == 3)){
+					strcpy (pedidos[qtdpedido].escolhachar, "TOXINA BOTULÍNICA");
+					system("cls");
+					printf(":  Adicionar 'Toxina botulínica' ao cadastro do cliente... :\n");
+				}
+				if ((pedidos[qtdpedido].escolha == 04) || (pedidos[qtdpedido].escolha == 4)){
+					strcpy (pedidos[qtdpedido].escolhachar, "MAMOPLASTIA");
+					system("cls");
+					puts(":.....:");
+					printf(":  Adicionar 'Mamoplastia' ao cadastro do cliente... :\n");
+					puts(":.....:");
+				}
+				if ((pedidos[qtdpedido].escolha == 05) || (pedidos[qtdpedido].escolha == 5)){
+					strcpy (pedidos[qtdpedido].escolhachar, "RINOPLASTIA");
+					system("cls");
+					puts(":.....:");
+					printf(":  Adicionar 'Rinoplastia' ao cadastro do cliente... :\n");
+					puts(":.....:");
+				}
+				if ((pedidos[qtdpedido].escolha == 06) || (pedidos[qtdpedido].escolha == 6)){
+					strcpy (pedidos[qtdpedido].escolhachar, "LIPOASPIRAÇÃO");
+					system("cls");
+					puts(":.....:");
+					printf(":  Adicionar 'Lipoaspiração' ao cadastro do cliente... :\n");
+					puts(":.....:");
+				}
+				
+				printf(":.. CPF (sem pontos): ");
+				fflush(stdin);
+				fgets(pedidos[qtdpedido].CPF, 15, stdin);
+				retorno = procura_cpf(pedidos[qtdpedido].CPF, clientes);
+				if (retorno == -1){
+					puts (": Cliente não cadastrado! :");
+				}else{
+					puts(":.....:");
+					printf(":.. Código do pedido: ");
+					scanf("%i", &pedidos[qtdpedido].codigo);
+					printf(":.. Valor do pedido: R$");
+					scanf("%f", &pedidos[qtdpedido].valorpedido);
+					qtdpedido++;
+				}
+				puts(":.....:");
+				puts(":.. PEDIDO REALIZADO COM SUCESSO ..:");
+				puts(":  Deseja cadastrar um novo pedido? {s/n}  :");
+				fflush(stdin);
+				scanf("%c", &op);
+			}	
+		}while (op!='n');
+	}
+
+	
+	void mostrar_clt(struct CLIENTE *clientes){
+		int cont, retorno;
+		char CPF[15]; 
+
+		system("cls");
+		puts(":..:  PESQUISAR CLIENTE  :..:");
+		puts(":.. CPF (sem pontos): ");
+		fflush(stdin);
+		fgets(CPF, 15, stdin);
+		for (cont=0; cont<=TOTCLIENTES; cont++){
+			if (strcmp (clientes[cont].CPF, CPF)==0){
+				if (clientes[cont].verifcliente == 1){
+					puts("\n");
+					printf(":.. Nome: %s", clientes[cont].nome);
+					puts(":.....:");
+					printf(":.. CPF: %s", clientes[cont].CPF);
+					puts(":.....:");
+					printf(":.. Telefone: %s", clientes[cont].telefone);
+					puts("\n");
+					system("pause");
+				}
+			}
+		}	
+	}
+	
+	void mostrar_pdo(struct PEDIDO *pedidos, struct CLIENTE *clientes){
+		int cont, cod, pos;
+		char retorno;
+		
+		system("cls");
+		puts(":..:  PESQUISAR PEDIDO  :..:");
+		printf(":.. Insira o código do pedido: ");
+		scanf("%i", &cod);
+		for (cont=0; cont<=TOTPEDIDOS; cont++){
+			if (cod == pedidos[cont].codigo){
+				puts("\n");
+				printf(":.. Cód.: %i\n", cod);
+				puts(":.....:");
+				printf(":.. Serviço: %i - %s\n", pedidos[cont].escolha, pedidos[cont].escolhachar);
+				puts(":.....:");
+				printf(":.. Total: R$%.2f\n", pedidos[cont].valorpedido);
+				puts(":.....:");
+				pos = procura_cpf(pedidos[cont].CPF, clientes);
+				printf(":.. CLIENTE: %s\n", clientes[pos].nome);
+				system("pause");	
+			}
+		}		
+	}
+
+	void listar_pdo (struct PEDIDO *pedidos, struct CLIENTE *clientes){
+		int cont=0, pos;
+		
+		system("cls");
+		puts(":..: PEDIDOS EFETUADOS :..:");
+		do{
+			puts("\n");
+			printf(":.. Cód.: %i\n", pedidos[cont].codigo);
+			puts(":.....:");
+			printf(":.. Serviço: %i - %s\n", pedidos[cont].escolha, pedidos[cont].escolhachar);
+			puts(":.....:");
+			printf(":.. Total: R$%.2f\n", pedidos[cont].valorpedido);
+			puts(":.....:");
+			pos = procura_cpf(pedidos[cont].CPF, clientes);
+			printf(":.. CLIENTE: %s\n", clientes[pos].nome);
+			cont++;
+		}while (cont<qtdpedido);
+		system("pause");
+	}
+	
+	void listar_clt(struct PEDIDO *pedidos, struct CLIENTE *clientes){
+		int cont, retorno;
+		
+		system("cls");
+		puts(":..:  LISTA DE CLIENTES CADASTRADOS :..:");
+		for (cont=0; cont<=qtdcliente; cont++){
+			if (clientes[cont].verifcliente == 1){
+				puts("\n");
+				puts(":.....:");
+				printf(":.. Nome: %s", clientes[cont].nome);
+				puts(":.....:");
+				printf(":.. CPF: %s", clientes[cont].CPF);
+				puts(":.....:");
+				printf(":.. Telefone: %s", clientes[cont].telefone);
+				puts(":.....:");
+			}
+		}
+		system("pause");
+	}
+	
+	void deletar_clt (struct CLIENTE *clientes){
+		int cont;
+		char CPF[15], op[2];
+		
+		system("cls");
+		puts(":..: DELETAR CADASTRO :..:");
+		puts(":.. Informe o CPF do cliente a ser deletado: ");
+		fflush(stdin); fgets(CPF, 15, stdin);
+		
+		for (cont=0; cont<=qtdcliente; cont++){
+			if (strcmp (CPF, clientes[cont].CPF)==0){
+				puts(":.......:");
+				printf(":.. Deseja deletar -- %s --? {s/n}\n", clientes[cont].nome);
+				scanf("%s", &op);
+				if (strcmp (op, "s")==0){
+					clientes[cont].verifcliente = 0;
+					system("cls");
+					puts(":.......:");
+					puts(":.. CLIENTE DELETADO COM SUCESSO! ..:");
+					puts(":.......:");
+					system("pause");
+				}
+				if (strcmp (op, "n")==0){
+					break;
+				}
+			}
+		}	
+	}
+	
+	void listar_pdoclt (struct PEDIDO *pedidos, struct CLIENTE *clientes){
+		int cont;
+		char CPF[15];
+		
+		system("cls");
+		puts(":..: PEDIDOS DO CLIENTE :..:");
+		printf(":.. Digite o CPF do cliente: ");
+		fflush(stdin); fgets(CPF, 15, stdin);
+		
+		for (cont=0; cont<=qtdcliente; cont++){
+			if (strcmp (CPF, clientes[cont].CPF)==0){
+				puts(":.....:");
+				printf(":.. CLIENTE: %s", clientes[cont].nome);
+				puts(":.....:");
+			}
+		}
+		
+		for (cont=0; cont<=qtdcliente; cont++){
+			if (strcmp (CPF, pedidos[cont].CPF)==0){
+				puts("\n");
+				printf(":.. Cód: %i\n", pedidos[cont].codigo);
+				puts(":.....:");
+				printf(":.. Total: R$%.2f\n", pedidos[cont].valorpedido);
+				puts(":.....:");
+				printf(":.. Serviço: %i - %s\n", pedidos[cont].escolha, pedidos[cont].escolhachar);
+				puts("\n");
+			}	
+		}
+		system("pause");
+	}
+	
+	void totalvendas (struct PEDIDO *pedidos){
+		int cont;
+		float soma=0;
+		
+		system("cls");
+		puts(":..: TOTAL DE VENDAS :..:");
+		for (cont=0; cont<=qtdpedido; cont++){
+			soma += pedidos[cont].valorpedido;
+		}
+		printf("    ..    R$%.2f    ..\n", soma);
+		system("pause");
+	}
+	
+/* Funções auxiliares */
+	int procura_cpf (char *CPF, struct CLIENTE *clientes){
+		int i, pos=-1;
+		for (i=0; i<qtdcliente; i++){
+			if (strcmp (clientes[i].CPF, CPF)==0){
+				pos = i;
+			}
+		}
+		return pos;
+	}
+	
+	
+/**/
